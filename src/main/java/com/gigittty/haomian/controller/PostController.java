@@ -18,10 +18,12 @@ import com.gigittty.haomian.model.entity.Post;
 import com.gigittty.haomian.model.entity.User;
 import com.gigittty.haomian.model.vo.PostVO;
 import com.gigittty.haomian.service.PostService;
-import com.gigittty.haomian.service.UserService;
+
 import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import com.gigittty.haomian.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
