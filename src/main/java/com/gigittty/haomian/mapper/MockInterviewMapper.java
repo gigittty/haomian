@@ -1,4 +1,4 @@
-package com.gigittty.haomian.manager;
+package com.gigittty.haomian.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

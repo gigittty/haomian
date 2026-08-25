@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gigittty.haomian.manager.MockInterviewMapper">
+<mapper namespace="com.gigittty.haomian.mapper.MockInterviewMapper">
 
-    <resultMap id="BaseResultMap" type="generator.domain.MockInterview">
+    <resultMap id="BaseResultMap" type="com.gigittty.haomian.model.entity.MockInterview">
             <id property="id" column="id" />
             <result property="workExperience" column="workExperience" />
             <result property="jobPosition" column="jobPosition" />

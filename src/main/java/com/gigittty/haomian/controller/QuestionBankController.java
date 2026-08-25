@@ -9,14 +9,17 @@ import com.gigittty.haomian.common.ResultUtils;
 import com.gigittty.haomian.constant.UserConstant;
 import com.gigittty.haomian.exception.BusinessException;
 import com.gigittty.haomian.exception.ThrowUtils;
+import com.gigittty.haomian.model.dto.question.QuestionQueryRequest;
 import com.gigittty.haomian.model.dto.questionBank.QuestionBankAddRequest;
 import com.gigittty.haomian.model.dto.questionBank.QuestionBankEditRequest;
 import com.gigittty.haomian.model.dto.questionBank.QuestionBankQueryRequest;
 import com.gigittty.haomian.model.dto.questionBank.QuestionBankUpdateRequest;
+import com.gigittty.haomian.model.entity.Question;
 import com.gigittty.haomian.model.entity.QuestionBank;
 import com.gigittty.haomian.model.entity.User;
 import com.gigittty.haomian.model.vo.QuestionBankVO;
 import com.gigittty.haomian.service.QuestionBankService;
+import com.gigittty.haomian.service.QuestionService;
 import com.gigittty.haomian.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -41,16 +44,21 @@ public class QuestionBankController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private QuestionService questionService;
+
+
     // region 增删改查
 
     /**
-     * 创建题库
+     * 创建题库（仅管理员可用）
      *
      * @param questionBankAddRequest
      * @param request
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addQuestionBank(@RequestBody QuestionBankAddRequest questionBankAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(questionBankAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
@@ -70,13 +78,14 @@ public class QuestionBankController {
     }
 
     /**
-     * 删除题库
+     * 删除题库（仅管理员可用）
      *
      * @param deleteRequest
      * @param request
      * @return
      */
     @PostMapping("/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteQuestionBank(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -126,17 +135,29 @@ public class QuestionBankController {
     /**
      * 根据 id 获取题库（封装类）
      *
-     * @param id
+     * @param questionBankQueryRequest
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<QuestionBankVO> getQuestionBankVOById(long id, HttpServletRequest request) {
+    public BaseResponse<QuestionBankVO> getQuestionBankVOById(@RequestBody QuestionBankQueryRequest questionBankQueryRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBankQueryRequest == null, ErrorCode.PARAMS_ERROR);
+        Long id = questionBankQueryRequest.getId();
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         QuestionBank questionBank = questionBankService.getById(id);
         ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
+        // 查询题库封装类
+        QuestionBankVO questionBankVO = questionBankService.getQuestionBankVO(questionBank, request);
+        // 是否关联查询题目列表
+        boolean needQueryQuestionList = questionBankQueryRequest.getNeedQueryQuestionList();
+        if (needQueryQuestionList) {
+            QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
+            questionQueryRequest.setQuestionBankId(id);
+            Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
+            questionBankVO.setQuestionPage(questionPage);
+        }
         // 获取封装类
-        return ResultUtils.success(questionBankService.getQuestionBankVO(questionBank, request));
+        return ResultUtils.success(questionBankVO);
     }
 
     /**
@@ -203,13 +224,14 @@ public class QuestionBankController {
     }
 
     /**
-     * 编辑题库（给用户使用）
+     * 编辑题库（仅管理员可用）
      *
      * @param questionBankEditRequest
      * @param request
      * @return
      */
     @PostMapping("/edit")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> editQuestionBank(@RequestBody QuestionBankEditRequest questionBankEditRequest, HttpServletRequest request) {
         if (questionBankEditRequest == null || questionBankEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

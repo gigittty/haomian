@@ -1,13 +1,13 @@
 package com.gigittty.haomian.model.vo;
 
-import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gigittty.haomian.model.entity.Question;
 import com.gigittty.haomian.model.entity.QuestionBank;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 题库视图
@@ -28,9 +28,14 @@ public class QuestionBankVO implements Serializable {
     private String title;
 
     /**
-     * 内容
+     * 描述
      */
-    private String content;
+    private String description;
+
+    /**
+     * 图片
+     */
+    private String picture;
 
     /**
      * 创建用户 id
@@ -47,15 +52,16 @@ public class QuestionBankVO implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 标签列表
-     */
-    private List<String> tagList;
 
     /**
      * 创建用户信息
      */
     private UserVO user;
+
+    /**
+     * 题库的题目列表（分页）
+     */
+    private Page<Question> questionPage;
 
     /**
      * 封装类转对象
@@ -69,8 +75,6 @@ public class QuestionBankVO implements Serializable {
         }
         QuestionBank questionBank = new QuestionBank();
         BeanUtils.copyProperties(questionBankVO, questionBank);
-        List<String> tagList = questionBankVO.getTagList();
-        questionBank.setTags(JSONUtil.toJsonStr(tagList));
         return questionBank;
     }
 
@@ -86,7 +90,6 @@ public class QuestionBankVO implements Serializable {
         }
         QuestionBankVO questionBankVO = new QuestionBankVO();
         BeanUtils.copyProperties(questionBank, questionBankVO);
-        questionBankVO.setTagList(JSONUtil.toList(questionBank.getTags(), String.class));
         return questionBankVO;
     }
 }

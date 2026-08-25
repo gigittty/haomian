@@ -3,6 +3,7 @@ package com.gigittty.haomian.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.gigittty.haomian.common.BaseResponse;
 import com.gigittty.haomian.model.dto.question.QuestionQueryRequest;
 import com.gigittty.haomian.model.entity.Question;
 import com.gigittty.haomian.model.vo.QuestionVO;
@@ -49,4 +50,12 @@ public interface QuestionService extends IService<Question> {
      * @return
      */
     Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request);
+
+    /**
+     * 分页获取题目列表（仅管理员可用）
+     *
+     * @param questionQueryRequest
+     * @return
+     */
+    Page<Question> listQuestionByPage(QuestionQueryRequest questionQueryRequest);
 }
