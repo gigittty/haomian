@@ -255,4 +255,21 @@ public class QuestionController {
     }
 
     // endregion
+
+    /**
+     * 搜索题目（封装类）
+     *
+     * @param questionQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/search/page/vo")
+    public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(
+            @RequestBody QuestionQueryRequest questionQueryRequest,
+            HttpServletRequest request) {
+        long size = questionQueryRequest.getPageSize();
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
+        Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
+        return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+    }
 }

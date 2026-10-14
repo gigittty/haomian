@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.gigittty.haomian.common.BaseResponse;
+import com.gigittty.haomian.model.dto.post.PostQueryRequest;
 import com.gigittty.haomian.model.dto.question.QuestionQueryRequest;
+import com.gigittty.haomian.model.entity.Post;
 import com.gigittty.haomian.model.entity.Question;
 import com.gigittty.haomian.model.vo.QuestionVO;
 
@@ -58,4 +60,12 @@ public interface QuestionService extends IService<Question> {
      * @return
      */
     Page<Question> listQuestionByPage(QuestionQueryRequest questionQueryRequest);
+
+    /**
+     * 从 ES 查询
+     *
+     * @param questionQueryRequest
+     * @return
+     */
+    Page<Question> searchFromEs(QuestionQueryRequest questionQueryRequest);
 }
